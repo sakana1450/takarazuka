@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+      var winCount = 0;
+      var loseCount = 0;
+  
+      function retry() {
+      // 選択画面を非表示に、結果画面を表示状態に切り替える
+      document.body.style.backgroundImage = "url('images/back_normal.png')";
+      document.getElementById("select-page").style.display = "block";
+      document.getElementById("result-page").style.display = "none";
+      }
+      // ローカルストレージからデータを取得
+      var localWin = localStorage.getItem("win");
+      var localLose = localStorage.getItem("lose");
+      if(localWin != null) {
+      winCount = parseInt(localWin);
+      }
+      if(localLose != null) {
+      loseCount = parseInt(localLose);
+      }
+
+      var localName = localStorage.getItem("name");
+
+      if(localName == null) {
+      // 初回起動時の処理
+      var inputName = prompt("お名前を入力して下さい");
+      localStorage.setItem("name", inputName);
+
+      //ローカルストレージに保存
+      localStorage.setItem("win", winCount);
+      localStorage.setItem("lose", loseCount);
+      }
+      function showAnswer(choiceNo) {
+      // 当たりの番号をランダムに設定
+      var luckyNumber = Math.ceil(Math.random() * 3);
+      // 当たりの場合とはずれの場合で結果を変える
+      if(luckyNumber == choiceNo) {
+        winCount++;
+      document.getElementById("result-msg").innerHTML = "おめでとうございます！";
+      document.getElementById("result-img").src = "images/box_treasure.png";
+      document.body.style.backgroundImage = "url('images/back_red.png')";
+      } else {
+      LoseCount++;
+      document.getElementById("result-msg").innerHTML = "残念！はずれです。";
+      document.getElementById("result-img").src = "images/box_empty.png";
+      document.body.style.backgroundImage = "url('images/back_blue.png')";
+      
+      }
+      // 選択画面を非表示に、結果画面を表示状態に切り替える
+      document.getElementById("select-page").style.display = "none";
+      document.getElementById("result-page").style.display = "block";
+      
+      // 勝率を計算
+      var result = calc(winCount, loseCount);
+      document.getElementById("message").innerHTML = result;
+      }
+      function calc(win, lose) {
+      var per = Math.floor(win / (win + lose) * 100);
+      var message = win + "勝" + lose + "敗 勝率" + per + "%";
+      return message;
+      }
+    function tyomateyo(){
+      document.getElementById("result-img").src = "images/kimu.png";
+    }
+      
+    </script>
+</head>
+<body>
+    <!-- 選択画面 -->
+    <div id="select-page" style="display:block">
+        <h1>宝当てゲーム</h1>
+        <h3>好きな宝箱を選んでください。</h3>
+        <img src="images/box_normal.png" class="box" onclick="showAnswer(1)"><br>
+        <img src="images/box_normal.png" class="box" onclick="showAnswer(2)"><br>
+        <img src="images/box_normal.png" class="box" onclick="showAnswer(3)"><br>
+    </div>
+    <!-- 結果画面 -->
+    <div id="result-page" style="display:none">
+        <h1 id="result-msg"></h1>
+        <img id="result-img" src="">
+        <button class="button" onclick="retry()">やりなおす</button>
+        <button class = "button" onclick="tyomateyo()">諦める</button>
+        <p id="message"></p>
+    </div>
+</body>
+</html>
